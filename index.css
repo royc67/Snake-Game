@@ -1,0 +1,28 @@
+body {
+  background-color: rgba(139, 80, 139, 0.151);
+}
+
+.row {
+  display: flex;
+}
+
+.apple {
+  color: green;
+  font-size: 26px;
+  text-align: center;
+}
+.square {
+  border: 1px dotted rgb(13, 6, 71);
+  height: 25px;
+  width: 25px;
+}
+
+.snake {
+  /* border: 1px solid rgb(13, 6, 71); */
+  background-color: brown;
+  border-radius: 20%;
+}
+
+/* .apple {
+  background-color: forestgreen;
+} */
