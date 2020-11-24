@@ -2,8 +2,8 @@ const GRID_LENGTH = 30;
 const APPLE = "fa fa-apple apple";
 const SPEED = 40;
 const container = document.querySelector("#container");
-const body = [[0, 0]];
-const foodPos = [
+let body = [[0, 0]];
+let foodPos = [
   Math.floor(Math.random() * GRID_LENGTH),
   Math.floor(Math.random() * GRID_LENGTH),
 ];
@@ -11,6 +11,8 @@ let justAte = false;
 let currentVec = 2;
 let lastVec = 2;
 let isAlive = true;
+let currentInterval;
+let score = 0;
 
 const vectors = [
   [0, -1],
@@ -18,15 +20,15 @@ const vectors = [
   [0, 1],
   [1, 0],
 ];
-const grid = Array.from({ length: GRID_LENGTH }, () =>
-  Array.from({ length: GRID_LENGTH }, () => "")
-);
+let grid;
+// let grid = Array.from({ length: GRID_LENGTH }, () =>
+//   Array.from({ length: GRID_LENGTH }, () => "")
+// );
 
-const [headX, headY] = body[0];
-const [foodX, foodY] = foodPos;
-
-grid[headX][headY] = "snake";
-grid[foodX][foodY] = APPLE;
+// let [headX, headY] = body[0];
+let headX, headY;
+// let [foodX, foodY] = foodPos;
+let foodX, foodY;
 
 // functions
 const draw = () => {
@@ -57,16 +59,14 @@ const move = () => {
   let newY = pastY + vectors[currentVec][1];
   newY = ((newY % GRID_LENGTH) + GRID_LENGTH) % GRID_LENGTH;
 
-  //   if (pastY === 0 && currentVec === 0) newY = GRID_LENGTH - 1;
-  //   if (pastX === 0 && currentVec === 1) newX = GRID_LENGTH - 1;
-  //   if (pastY === GRID_LENGTH - 1 && currentVec === 2) newY = 0;
-  //   if (pastX === GRID_LENGTH - 1 && currentVec === 3) newX = 0;
-
   body.unshift([newX, newY]);
   if (!justAte) {
     const [lastX, lastY] = body.pop();
     grid[lastX][lastY] = "";
-  } else justAte = false;
+  } else {
+    justAte = false;
+    score++;
+  }
 
   body.forEach(([x, y]) => (grid[x][y] = "snake"));
   const [x, y] = foodPos;
@@ -78,12 +78,7 @@ const genFood = () => {
     do {
       foodPos[0] = Math.floor(Math.random() * grid.length);
       foodPos[1] = Math.floor(Math.random() * grid.length);
-      console.log(grid[foodPos[0]][foodPos[1]] === "snake");
     } while (grid[foodPos[0]][foodPos[1]] === "snake");
-    // {
-    //   foodPos[0] = Math.floor(Math.random() * grid.length);
-    //   foodPos[1] = Math.floor(Math.random() * grid.length);
-    // }
     grid[foodPos[0]][foodPos[1]] = APPLE;
 
     justAte = true;
@@ -98,17 +93,39 @@ const checkDead = () => {
 };
 
 document.addEventListener("keydown", changeVector);
-let intervalID = setInterval(() => {
-  console.log("still runs");
-  if (!isAlive) {
-    clearInterval(intervalID);
-    return;
-  }
-  move();
-  genFood();
-  draw();
-  checkDead();
-  lastVec = currentVec;
-}, SPEED);
 
-draw();
+const startGame = (boardSize = 1, difficulty = 1) => {
+  score = 0;
+  body = [[0, 0]];
+  foodPos = [
+    Math.floor(Math.random() * GRID_LENGTH),
+    Math.floor(Math.random() * GRID_LENGTH),
+  ];
+  justAte = false;
+  currentVec = 2;
+  lastVec = 2;
+  isAlive = true;
+  // grid.forEach((row) => row.fill("", 0));
+  grid = Array.from({ length: GRID_LENGTH / boardSize }, () =>
+    Array.from({ length: GRID_LENGTH / boardSize }, () => "")
+  );
+
+  [foodX, foodY] = foodPos;
+  [headX, headY] = body[0];
+
+  grid[headX][headY] = "snake";
+  grid[foodX][foodY] = APPLE;
+
+  clearInterval(currentInterval);
+  currentInterval = setInterval(() => {
+    if (!isAlive) {
+      clearInterval(currentInterval);
+      return;
+    }
+    move();
+    genFood();
+    draw();
+    checkDead();
+    lastVec = currentVec;
+  }, SPEED / difficulty);
+};
