@@ -98,8 +98,12 @@ const checkDead = () => {
 };
 
 document.addEventListener("keydown", changeVector);
-setInterval(() => {
-  if (!isAlive) return;
+let intervalID = setInterval(() => {
+  console.log("still runs");
+  if (!isAlive) {
+    clearInterval(intervalID);
+    return;
+  }
   move();
   genFood();
   draw();
