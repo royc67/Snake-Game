@@ -1,6 +1,6 @@
-const GRID_LENGTH = 20;
+const GRID_LENGTH = 30;
 const APPLE = "fa fa-apple apple";
-const SPEED = 120;
+const SPEED = 40;
 const container = document.querySelector("#container");
 const body = [[0, 0]];
 const foodPos = [
@@ -9,6 +9,7 @@ const foodPos = [
 ];
 let justAte = false;
 let currentVec = 2;
+let lastVec = 2;
 let isAlive = true;
 
 const vectors = [
@@ -44,8 +45,8 @@ const draw = () => {
 
 const changeVector = ({ keyCode }) => {
   if (keyCode < 37 || keyCode > 40) return;
-  if (Math.abs(currentVec - (keyCode - 37)) === 2) return;
   currentVec = keyCode - 37;
+  if (Math.abs(currentVec - lastVec) === 2) currentVec = lastVec;
 };
 
 const move = () => {
@@ -103,6 +104,7 @@ setInterval(() => {
   genFood();
   draw();
   checkDead();
+  lastVec = currentVec;
 }, SPEED);
 
 draw();
