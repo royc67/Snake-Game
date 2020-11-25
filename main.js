@@ -1,33 +1,29 @@
+// consts
 const GRID_LENGTH = 30;
 const APPLE = "fa fa-apple apple";
-const SPEED = 40;
-const container = document.querySelector("#container");
-let body = [[0, 0]];
-let foodPos = [
-  Math.floor(Math.random() * GRID_LENGTH),
-  Math.floor(Math.random() * GRID_LENGTH),
-];
-let justAte = false;
-let currentVec = 2;
-let lastVec = 2;
-let isAlive = true;
-let currentInterval;
-let score = 0;
-
+const SPEED = 120;
 const vectors = [
   [0, -1],
   [-1, 0],
   [0, 1],
   [1, 0],
 ];
-let grid;
-// let grid = Array.from({ length: GRID_LENGTH }, () =>
-//   Array.from({ length: GRID_LENGTH }, () => "")
-// );
 
-// let [headX, headY] = body[0];
+// Elements Declaration
+const difficultySelector = document.getElementById("difficultySelector");
+const boardSizeSelector = document.getElementById("boardSizeSelector");
+const container = document.getElementById("container");
+const startGameButton = document.getElementById("startGameBtn");
+const scoreElement = document.getElementById("score");
+scoreElement.innerText = 0;
+
+// Game Variables
+let currentIntervalID;
+let difficulty, boardSize, score;
+let grid, snakeBody, foodPosition, justAte, isAlive;
+let currentVector = 2,
+  lastVector;
 let headX, headY;
-// let [foodX, foodY] = foodPos;
 let foodX, foodY;
 
 // functions
@@ -47,85 +43,91 @@ const draw = () => {
 
 const changeVector = ({ keyCode }) => {
   if (keyCode < 37 || keyCode > 40) return;
-  currentVec = keyCode - 37;
-  if (Math.abs(currentVec - lastVec) === 2) currentVec = lastVec;
+  currentVector = keyCode - 37;
+  if (Math.abs(currentVector - lastVector) === 2) currentVector = lastVector;
 };
 
 const move = () => {
-  const [pastX, pastY] = body[0];
+  const [pastX, pastY] = snakeBody[0];
 
-  let newX = pastX + vectors[currentVec][0];
-  newX = ((newX % GRID_LENGTH) + GRID_LENGTH) % GRID_LENGTH;
-  let newY = pastY + vectors[currentVec][1];
-  newY = ((newY % GRID_LENGTH) + GRID_LENGTH) % GRID_LENGTH;
+  let newX = pastX + vectors[currentVector][0];
+  newX = ((newX % grid.length) + grid.length) % grid.length;
+  let newY = pastY + vectors[currentVector][1];
+  newY = ((newY % grid.length) + grid.length) % grid.length;
 
-  body.unshift([newX, newY]);
+  snakeBody.unshift([newX, newY]);
   if (!justAte) {
-    const [lastX, lastY] = body.pop();
+    const [lastX, lastY] = snakeBody.pop();
     grid[lastX][lastY] = "";
   } else {
     justAte = false;
     score++;
+    scoreElement.innerText = score;
   }
 
-  body.forEach(([x, y]) => (grid[x][y] = "snake"));
-  const [x, y] = foodPos;
-  grid[x][y] = APPLE;
+  snakeBody.forEach(([x, y]) => (grid[x][y] = "snake"));
 };
 
 const genFood = () => {
-  if (body[0][0] === foodPos[0] && body[0][1] === foodPos[1]) {
+  if (
+    snakeBody[0][0] === foodPosition[0] &&
+    snakeBody[0][1] === foodPosition[1]
+  ) {
     do {
-      foodPos[0] = Math.floor(Math.random() * grid.length);
-      foodPos[1] = Math.floor(Math.random() * grid.length);
-    } while (grid[foodPos[0]][foodPos[1]] === "snake");
-    grid[foodPos[0]][foodPos[1]] = APPLE;
+      foodPosition[0] = Math.floor(Math.random() * grid.length);
+      foodPosition[1] = Math.floor(Math.random() * grid.length);
+    } while (grid[foodPosition[0]][foodPosition[1]] === "snake");
+    grid[foodPosition[0]][foodPosition[1]] = APPLE;
 
     justAte = true;
   }
 };
 
 const checkDead = () => {
-  const [headX, headY] = body[0];
+  const [headX, headY] = snakeBody[0];
 
-  isAlive = !body.slice(1).filter(([x, y]) => x === headX && y === headY)
+  isAlive = !snakeBody.slice(1).filter(([x, y]) => x === headX && y === headY)
     .length;
 };
 
-document.addEventListener("keydown", changeVector);
-
-const startGame = (boardSize = 1, difficulty = 1) => {
+const startGame = () => {
+  difficulty = parseInt(difficultySelector.value);
+  boardSize = parseInt(boardSizeSelector.value);
   score = 0;
-  body = [[0, 0]];
-  foodPos = [
-    Math.floor(Math.random() * GRID_LENGTH),
-    Math.floor(Math.random() * GRID_LENGTH),
+  scoreElement.innerText = score;
+  snakeBody = [[0, 0]];
+  foodPosition = [
+    Math.floor((Math.random() * GRID_LENGTH) / boardSize),
+    Math.floor((Math.random() * GRID_LENGTH) / boardSize),
   ];
   justAte = false;
-  currentVec = 2;
-  lastVec = 2;
+  currentVector = 2;
+  lastVector = 2;
   isAlive = true;
   // grid.forEach((row) => row.fill("", 0));
   grid = Array.from({ length: GRID_LENGTH / boardSize }, () =>
     Array.from({ length: GRID_LENGTH / boardSize }, () => "")
   );
 
-  [foodX, foodY] = foodPos;
-  [headX, headY] = body[0];
+  [foodX, foodY] = foodPosition;
+  [headX, headY] = snakeBody[0];
 
   grid[headX][headY] = "snake";
   grid[foodX][foodY] = APPLE;
 
-  clearInterval(currentInterval);
-  currentInterval = setInterval(() => {
+  clearInterval(currentIntervalID);
+  currentIntervalID = setInterval(() => {
     if (!isAlive) {
-      clearInterval(currentInterval);
+      clearInterval(currentIntervalID);
       return;
     }
     move();
     genFood();
     draw();
     checkDead();
-    lastVec = currentVec;
+    lastVector = currentVector;
   }, SPEED / difficulty);
 };
+document.addEventListener("keydown", changeVector);
+startGameButton.addEventListener("click", startGame);
+startGame();
