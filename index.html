@@ -11,8 +11,29 @@
     <link rel="stylesheet" href="./index.css" />
   </head>
   <body>
-    <h1>Welcome to Snake Game</h1>
-    <button onClick="startGame()" id="startGame">Start Game</button>
+    <h1>Snake Game</h1>
+    <div>
+      <div>Difficulty</div>
+      <select id="difficultySelector" class="custom-select" alt="Sort By:">
+        <option value="1">Slow</option>
+        <option value="2">Normal</option>
+        <option value="3">Fast</option>
+        <option value="4">Super Fast</option>
+        <option value="6">God Mode</option>
+      </select>
+
+      <div>Board Size</div>
+      <select id="boardSizeSelector" class="custom-select" alt="Sort By:">
+        <option value="3">small</option>
+        <option value="2">medium</option>
+        <option value="1">large</option>
+      </select>
+      <br />
+      <br />
+      <button id="startGameBtn">Start Game</button>
+    </div>
+    <br />
+    <div>Score <span id="score"></span></div>
     <div id="container"></div>
     <script src="./main.js"></script>
   </body>
