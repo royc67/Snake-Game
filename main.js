@@ -29,12 +29,14 @@ let foodX, foodY;
 // functions
 const draw = () => {
   container.innerHTML = "";
-  grid.forEach((row) => {
+  grid.forEach((row, x) => {
     const rowElement = document.createElement("div");
     rowElement.className = "row";
-    row.forEach((square) => {
+    row.forEach((square, y) => {
       const squareElement = document.createElement("div");
       squareElement.className = `square ${square}`;
+      squareElement.className += x % 2 && y % 2 ? " grey" : " black";
+      squareElement.className += !(x % 2) && !(y % 2) ? " grey" : " black";
       rowElement.appendChild(squareElement);
     });
     container.appendChild(rowElement);

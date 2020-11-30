@@ -11,6 +11,12 @@ body {
   font-size: 26px;
   text-align: center;
 }
+.black {
+  background-color: rgb(245, 229, 229);
+}
+.grey {
+  background-color: rgb(214, 207, 207);
+}
 .square {
   border: 1px dotted rgb(13, 6, 71);
   height: 25px;
