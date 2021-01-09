@@ -1,7 +1,7 @@
 // consts
 const GRID_LENGTH = 30;
 const APPLE = "fa fa-apple apple";
-const SPEED = 120;
+const SPEED = 100;
 const vectors = [
   [0, -1],
   [-1, 0],
@@ -29,17 +29,20 @@ let foodX, foodY;
 // functions
 const draw = () => {
   container.innerHTML = "";
+  let black = true;
   grid.forEach((row, x) => {
     const rowElement = document.createElement("div");
     rowElement.className = "row";
     row.forEach((square, y) => {
       const squareElement = document.createElement("div");
-      squareElement.className = `square ${square}`;
-      squareElement.className += x % 2 && y % 2 ? " grey" : " black";
-      squareElement.className += !(x % 2) && !(y % 2) ? " grey" : " black";
+      squareElement.className = `square ${square} ${black ? "black" : "grey"}`;
+      // squareElement.className += x % 2 && y % 2 ? " grey" : " black";
+      // squareElement.className += !(x % 2) && !(y % 2) ? " grey" : " black";
       rowElement.appendChild(squareElement);
+      black = !black;
     });
     container.appendChild(rowElement);
+    black = !black;
   });
 };
 
